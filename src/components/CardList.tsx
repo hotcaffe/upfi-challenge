@@ -16,18 +16,20 @@ interface CardsProps {
 }
 
 export function CardList({ cards }: CardsProps): JSX.Element {
-  // TODO MODAL USEDISCLOSURE
+  const {isOpen, onClose, onOpen} = useDisclosure();
+  
+  const [modalImage, setModalImage] = useState("");
 
-  // TODO SELECTED IMAGE URL STATE
-
-  // TODO FUNCTION HANDLE VIEW IMAGE
+  const handleModalImage = (url: string): void => {
+    setModalImage(url);
+    onOpen();
+  } 
 
   return (
     <>
-      {/* TODO CARD GRID */}
       <Grid templateColumns="repeat(3, 1fr)" gap='40px' >
         {cards.map(card => (
-          <GridItem key={card.id} w="293px" h="290px" backgroundColor='gray.800' borderRadius='6px'>
+          <GridItem key={card.id} w="293px" h="290px" backgroundColor='gray.800' borderRadius='6px' cursor='pointer' onClick={() => handleModalImage(card.url)}>
             <Image src={card.url} borderRadius='6px 6px 0 0'/>
             <VStack align='flex-start' justify='center' h='100px' mx='25px' spacing={1}>
               <Text fontWeight='bold' fontSize='2xl' color='gray.50'>{card.title}</Text>
@@ -35,16 +37,10 @@ export function CardList({ cards }: CardsProps): JSX.Element {
             </VStack>
           </GridItem>
         ))}
-        {/* <GridItem w="293px" h="290px" bg="blue.500" borderBox='6px'>
-
-        </GridItem>
-        <GridItem w="293px" h="290px" bg="blue.500"></GridItem>
-        <GridItem w="293px" h="290px" bg="blue.500"></GridItem>
-        <GridItem w="293px" h="290px" bg="blue.500"></GridItem>
-        <GridItem w="293px" h="290px" bg="blue.500"></GridItem>
-        <GridItem w="293px" h="290px" bg="blue.500"></GridItem> */}
       </Grid>
-      {/* TODO MODALVIEWIMAGE */}
+      
+      <ModalViewImage isOpen={isOpen} onClose={onClose} imgUrl={modalImage}/>
+      
     </>
   );
 }
