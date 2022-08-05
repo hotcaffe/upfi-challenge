@@ -1,4 +1,4 @@
-import { Button, Box, Text, useDisclosure } from '@chakra-ui/react';
+import { Button, Box, Text } from '@chakra-ui/react';
 import { useMemo } from 'react';
 import { useInfiniteQuery } from 'react-query';
 
@@ -7,7 +7,6 @@ import { CardList } from '../components/CardList';
 import { api } from '../services/api';
 import { Loading } from '../components/Loading';
 import { Error } from '../components/Error';
-import { ModalViewImage } from '../components/Modal/ViewImage';
 
 export default function Home(): JSX.Element {
   const {
@@ -19,13 +18,15 @@ export default function Home(): JSX.Element {
     hasNextPage,
   } = useInfiniteQuery(
     'images',
-    ({pageParam = 1}) => api.get(`/api/images?after=${pageParam}`),
+    async ({pageParam = null}) => await api.get('/api/images', {
+      params: {
+        after: pageParam
+      }
+    }),
     {
       getNextPageParam: (lastPage) => lastPage?.data.after
     }
   );
-
-  const {isOpen, onOpen, onClose} = useDisclosure();
 
   const formattedData = useMemo(() => {
     const pages = data?.pages.map(page => {
@@ -34,13 +35,13 @@ export default function Home(): JSX.Element {
 
     return pages?.flat()
   }, [data]);
+  
+  if(isError) {
+    return <Error />
+  }
 
   if(isLoading) {
     return <Loading />
-  }
-
-  if(isError) {
-    return <Error />
   }
 
   return (
